@@ -57,7 +57,7 @@ public class GameLoop : NetworkBehaviour
 
     private void Update()
     {
-        NumberOfPlayer = GameObject.Find("LoginManager").GetComponent<LoginManager>().playerNameList.Count;
+        //NumberOfPlayer = GameObject.Find("LoginManager").GetComponent<LoginManager>().playerNameList.Count;
 
 
     }
