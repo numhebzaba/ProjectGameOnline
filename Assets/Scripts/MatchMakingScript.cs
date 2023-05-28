@@ -20,9 +20,12 @@ public class MatchMakingScript : MonoBehaviour
    public TMP_InputField playerNameInput;
     public GameObject startButton;
     public GameObject MatchMakingPanel;
+    public GameObject MainMenuPanel;
+
     private string PlayerName;
     string lobbyname = "Mylobby";
     private Lobby joinedLobby;
+    public TextMeshProUGUI ShowTextIdLobby;
 
     public async void StartGame()
     {
@@ -34,8 +37,9 @@ public class MatchMakingScript : MonoBehaviour
         if(joinedLobby == null)
         {
             startButton.SetActive(true);
-            MatchMakingPanel.SetActive(true);
+            MatchMakingPanel.SetActive(false);
         }
+        MainMenuPanel.SetActive(false);
         await UnityServices.InitializeAsync();
     }
 
@@ -73,6 +77,7 @@ public class MatchMakingScript : MonoBehaviour
             NetworkManager.Singleton.StartHost();
 
             LobbyScript.Instance.PrintPlayers(lobby);
+            ShowTextIdLobby.text = "ID: " + lobby.LobbyCode;
             return lobby;
         }
         catch (LobbyServiceException e)
@@ -92,6 +97,12 @@ public class MatchMakingScript : MonoBehaviour
         }
     }
 
+    public void PlayButton()
+    {
+        MainMenuPanel.SetActive(false);
+        MatchMakingPanel.SetActive(true);
+    }
+
     private async Task<Lobby> JoinLobby()
     {
         try
@@ -102,12 +113,14 @@ public class MatchMakingScript : MonoBehaviour
             if (lobby.Data["JoinCodeKey"].Value != null)
             {
                 string joinCode = lobby.Data["JoinCodeKey"].Value;
-                Debug.Log("joincode = " + joinCode);
+                //Debug.Log("joincode = " + joinCode);
                 JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
                 RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
                 NetworkManager.Singleton.StartClient();
+                //ShowTextIdLobby.text = "ID: " + lobby.LobbyCode;
+
                 return lobby;
             }
             return null;
@@ -134,6 +147,8 @@ public class MatchMakingScript : MonoBehaviour
             Debug.Log("Lobbies found: " + queryResponse.Results.Count);
             foreach (Lobby lobby in queryResponse.Results)
             {
+                string joinCode = lobby.Data["JoinCodeKey"].Value;
+                Debug.Log("joincode = " + joinCode);
                 return lobby;
             }
             return null;

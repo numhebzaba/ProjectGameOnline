@@ -24,12 +24,14 @@ public class LobbyScript : Singleton<LobbyScript>
 
     public TMP_InputField LobbyID;
     public GameObject MatchMakingPanel;
-
+    //public GameObject MainMenyPanel;
+    public TextMeshProUGUI ShowTextIdLobby;
 
     private void Start()
     {
         playerName = "myName" + Random.Range(1, 999);
         Debug.Log("Player name : " + playerName);
+        MatchMakingPanel.SetActive(false);
     }
 
     private void Update()
@@ -40,7 +42,14 @@ public class LobbyScript : Singleton<LobbyScript>
     public async void StartGame()
     {
         //joinedLobby = await CreateLobby();
-        joinedLobby = await JoinLobbyByid();
+        joinedLobby = await JoinLobbyByCode(LobbyID.text);
+        await UnityServices.InitializeAsync();
+    }
+
+    public async void CreateLobbyToStartGame()
+    {
+        //joinedLobby = await CreateLobby();
+        joinedLobby = await CreateLobby();
         await UnityServices.InitializeAsync();
     }
 
@@ -58,12 +67,12 @@ public class LobbyScript : Singleton<LobbyScript>
             }
         }
     }
-    public async void CreateLobby()
+    private async Task<Lobby> CreateLobby()
     {
         try
         {
-            string lobbyName = "MyLobby";
             int maxPlayer = 4;
+            string lobbyName = "MyLobby";
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayer);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
@@ -81,18 +90,12 @@ public class LobbyScript : Singleton<LobbyScript>
                 Data = new Dictionary<string, DataObject>
                 {
                     {"JoinCodeKey", new DataObject(DataObject.VisibilityOptions.Public, joinCode) }
-
                 }
             };
 
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayer, createLobbyOptions);
             StartCoroutine(HeartBeatLobbyCoroutine(lobby.Id, 15));
-
-            hostLobby = lobby;
-            joinedLobby = hostLobby;
-            StartCoroutine(HeartBeatLobbyCoroutine(hostLobby.Id, 15));
             Debug.Log("Created Lobby : " + lobby.Name + " , " + lobby.MaxPlayers + " , " + lobby.Id + " , " + lobby.LobbyCode);
-            PrintPlayers(hostLobby);
 
             RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
@@ -100,10 +103,14 @@ public class LobbyScript : Singleton<LobbyScript>
 
             LobbyScript.Instance.PrintPlayers(lobby);
             MatchMakingPanel.SetActive(false);
+            ShowTextIdLobby.text = "ID: "+ lobby.LobbyCode;
+
+            return lobby;
         }
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+            return null;
         }
     }
 
@@ -173,19 +180,15 @@ public class LobbyScript : Singleton<LobbyScript>
     {
         try
         {
-            Lobby lobby = await FindRandomLobby();
-            Debug.Log(lobby.Name);
+            string LobbyIdInput = LobbyID.text;
+            Lobby lobby = await FindRandomLobby(LobbyIdInput);
+            if (lobby == null) return null;
 
-            if (lobby == null) {
-                Debug.Log("Null");
-                return null;
-            } 
-            if (lobby != null)
+            if (lobby.Data["JoinCodeKey"].Value != null)
             {
-                Debug.Log("lobbyConde" + lobby.LobbyCode);
-                string joincode = lobby.LobbyCode;
-                Debug.Log("Joincode = " + joincode);
-                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joincode);
+                string joinCode = lobby.Data["JoinCodeKey"].Value;
+                Debug.Log("joincode = " + joinCode);
+                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
                 RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
@@ -196,12 +199,12 @@ public class LobbyScript : Singleton<LobbyScript>
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log("No Lobby found");
+            Debug.Log("No lobby found");
             return null;
         }
     }
 
-    private async Task<Lobby> FindRandomLobby()
+    private async Task<Lobby> FindRandomLobby(string lobbyID)
     {
         try
         {
@@ -216,8 +219,14 @@ public class LobbyScript : Singleton<LobbyScript>
             Debug.Log("Lobbies found: " + queryResponse.Results.Count);
             foreach (Lobby lobby in queryResponse.Results)
             {
-                Debug.Log(lobby.Name);
-                return lobby;
+                string joinCode = lobby.Data["JoinCodeKey"].Value;
+                Debug.Log("joincode = " + joinCode);
+                if(joinCode == lobbyID)
+                {
+                    Debug.Log("Joined");
+                    return lobby;
+                }
+                return null;
             }
             return null;
         }
@@ -228,7 +237,7 @@ public class LobbyScript : Singleton<LobbyScript>
         }
     }
 
-    private async void JoinLobbyByCode(string lobbyCode)
+    private async Task<Lobby> JoinLobbyByCode(string lobbyCode)
     {
         try
         {
@@ -239,18 +248,30 @@ public class LobbyScript : Singleton<LobbyScript>
                     Data = new Dictionary<string, PlayerDataObject>
                     {
                         {"PlayerName",
-                            new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,playerName)}
+                        new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,playerName)}
                     }
                 }
             };
             Lobby lobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
             joinedLobby = lobby;
-            Debug.Log("Joined Lobby wiht code : " + lobbyCode);
+            Debug.Log("lobby with code " + lobbyCode);
             PrintPlayers(joinedLobby);
+
+            string joinCode = lobby.Data["JoinCodeKey"].Value;
+            //Debug.Log("joincode = " + joinCode);
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+
+            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+            NetworkManager.Singleton.StartClient();
+            ShowTextIdLobby.text = "ID: " + lobby.LobbyCode;
+            MatchMakingPanel.SetActive(false);
+            return lobby;
         }
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+            return null;
         }
     }
 
