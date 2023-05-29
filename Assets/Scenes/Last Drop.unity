@@ -1304,8 +1304,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2e067d99981a974fabb758da5721c92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CountdownTimePhase_1: 10
-  CountdownTimePhase_2: 10
+  CountdownTimePhase_1: 5
+  CountdownTimePhase_2: 5
   StartButtons: {fileID: 1999607654}
   IsphaseOne: 0
   IsPlayer_1CanWin: 1
@@ -5952,7 +5952,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1629182081143070259, guid: 4a2042fe68d4cf746871cf12d79fe4ea, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a2042fe68d4cf746871cf12d79fe4ea, type: 3}

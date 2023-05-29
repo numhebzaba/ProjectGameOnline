@@ -26,8 +26,8 @@ public class LoginManager : NetworkBehaviour
         NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
         NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
-        loginPanel.SetActive(true);
-        leaveButton.SetActive(false);
+        //loginPanel.SetActive(true);
+        //leaveButton.SetActive(false);
     }
     private void OnDestroy()
     {

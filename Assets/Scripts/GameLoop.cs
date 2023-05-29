@@ -58,7 +58,7 @@ public class GameLoop : NetworkBehaviour
     private void Update()
     {
         //NumberOfPlayer = GameObject.Find("LoginManager").GetComponent<LoginManager>().playerNameList.Count;
-
+        CheckWinner();
 
     }
     public void StartGameButton()
@@ -105,7 +105,7 @@ public class GameLoop : NetworkBehaviour
 
     IEnumerator WalkPhaseCountDownCoroutine()
     {
-        CheckWinner();
+        //CheckWinner();
         Debug.Log("Phase 2 : Start");
         CountdownTimeText.color = new Color(255/255f, 148/255f, 0);
 
@@ -117,8 +117,8 @@ public class GameLoop : NetworkBehaviour
         {
             CountdownTimeTemp2 = i;
             CountdownTimeText.text = i.ToString();
-            if (CountdownTimeTemp2 == 0)
-                CountdownTimeText.text = "Phase 2 : Time up";
+            //if (CountdownTimeTemp2 == 0)
+                //CountdownTimeText.text = "Phase 2 : Time up";
             Debug.Log(CountdownTimeTemp2);
             yield return new WaitForSeconds(1);
         }
@@ -148,12 +148,12 @@ public class GameLoop : NetworkBehaviour
     public void DropPlatFormClientRpc(int RandNum)
     {
 
-        StartCoroutine(WaitDropPlatFormCoroutine(1.3f, RandNum));
+        StartCoroutine(WaitDropPlatFormCoroutine(2.0f, RandNum));
 
     }
     IEnumerator WaitDropPlatFormCoroutine(float time, int RandNum)
     {
-        
+
         Debug.Log(RandNum);
         switch (RandNum)
         {
@@ -189,8 +189,14 @@ public class GameLoop : NetworkBehaviour
         }
 
         yield return new WaitForSeconds(time);
-        Platforms[RandNum].SetActive(false);
-        
+        for (int i = 0; i <= Platforms.Length - 1 ; i++)
+        {
+            if (Platforms[i] == Platforms[RandNum]) 
+                continue;
+            Platforms[i].SetActive(false);
+
+        }
+
 
     }
     [ClientRpc]
@@ -324,22 +330,34 @@ public class GameLoop : NetworkBehaviour
     [ClientRpc]
     public void showWinnerClientRpc()
     {
-        if (NumberOfPlayer - currentPlayerDead == 1)
+        if (IsPlayer_1CanWin && !IsPlayer_2CanWin && !IsPlayer_3CanWin)
         {
+            EndGameText.text = $" Winner : Player 1 ";
             EndGameTextBar.SetActive(true);
             EndGameText.enabled = true;
-
-            if (IsPlayer_1CanWin)
-                EndGameText.text = $" Winner : Player 1 ";
-            else if (IsPlayer_2CanWin)
-                EndGameText.text = $" Winner : Player 2 ";
-            else if (IsPlayer_3CanWin)
-                EndGameText.text = $" Winner : Player 3 ";
-            else if (IsPlayer_4CanWin)
-                EndGameText.text = $" Winner : Player 4 ";
-
             Time.timeScale = 0;
+
         }
-        
+        else if (IsPlayer_2CanWin && !IsPlayer_1CanWin && !IsPlayer_3CanWin)
+        {
+            EndGameText.text = $" Winner : Player 2 ";
+            EndGameTextBar.SetActive(true);
+            EndGameText.enabled = true;
+            Time.timeScale = 0;
+
+        }
+        else if (IsPlayer_3CanWin && !IsPlayer_1CanWin && !IsPlayer_2CanWin)
+        {
+            EndGameText.text = $" Winner : Player 3 ";
+            EndGameTextBar.SetActive(true);
+            EndGameText.enabled = true;
+            Time.timeScale = 0;
+
+        }
+        //else if (IsPlayer_3CanWin)
+        //    EndGameText.text = $" Winner : Player 3 ";
+        //else if (IsPlayer_4CanWin)
+        //    EndGameText.text = $" Winner : Player 4 ";
+
     }
 }

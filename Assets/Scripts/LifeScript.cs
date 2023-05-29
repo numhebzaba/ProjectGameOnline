@@ -39,10 +39,10 @@ public class LifeScript : NetworkBehaviour
     private void updateLife()
     {
         if (IsOwnedByServer)
-        { p1Text.text = $"{PlayerName.playerNameA.Value} : {lifeP1.Value}"; }
-        else if (OwnerClientId == 1) { p2Text.text = $"{PlayerName.playerNameB.Value} : {lifeP2.Value}"; }
-        else if (OwnerClientId == 2) { p3Text.text = $"{PlayerName.playerNameC.Value} : {lifeP3.Value}"; }
-        else if (OwnerClientId == 3) { p4Text.text = $"{PlayerName.playerNameD.Value} : {lifeP4.Value}"; }
+        { p1Text.text = $"{"Player 1"} : {lifeP1.Value}"; }
+        else if (OwnerClientId == 1) { p2Text.text = $"{"Player 2"} : {lifeP2.Value}"; }
+        else if (OwnerClientId == 2) { p3Text.text = $"{"Player 3"} : {lifeP3.Value}"; }
+        else if (OwnerClientId == 3) { p4Text.text = $"{"Player 4"} : {lifeP4.Value}"; }
       
     }
     // Update is called once per frame
