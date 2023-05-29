@@ -9,7 +9,7 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using Unity.Netcode;
 using System.Threading.Tasks;
-using ParrelSync;
+//using ParrelSync;
 
 public class RelayManager : Singleton<RelayManager>
 {
@@ -20,7 +20,7 @@ public class RelayManager : Singleton<RelayManager>
     {
         InitializationOptions options = new InitializationOptions();
 #if UNITY_EDITOR
-        options.SetProfile(ClonesManager.IsClone() ? ClonesManager.GetArgument() : "Primary");
+        //options.SetProfile(ClonesManager.IsClone() ? ClonesManager.GetArgument() : "Primary");
 #endif
         await UnityServices.InitializeAsync(options);
 

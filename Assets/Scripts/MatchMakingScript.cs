@@ -9,7 +9,7 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using Unity.Netcode;
 using System.Threading.Tasks;
-using ParrelSync;
+//using ParrelSync;
 using Unity.Services;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
