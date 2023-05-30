@@ -88,6 +88,7 @@ public class LifeScript : NetworkBehaviour
                 }
                 else if (lifeP2.Value == 0)
                 {
+                    cinemachineVirtualCamera.SetActive(false);
                     GetComponent<PlayerSpawnScript>().DisableCharacter();
                     gameloop.IsPlayer_2CanWin = false;
                     updateCurreentPlayerServerRpc(2);
@@ -103,6 +104,8 @@ public class LifeScript : NetworkBehaviour
                 }
                 else if (lifeP3.Value == 0)
                 {
+                    cinemachineVirtualCamera.SetActive(false);
+
                     GetComponent<PlayerSpawnScript>().DisableCharacter();
                     gameloop.IsPlayer_3CanWin = false;
                     updateCurreentPlayerServerRpc(3);
@@ -117,6 +120,8 @@ public class LifeScript : NetworkBehaviour
                     GetComponent<PlayerSpawnScript>().Respawn();
                 }else if(lifeP4.Value == 0)
                 {
+                    cinemachineVirtualCamera.SetActive(false);
+
                     GetComponent<PlayerSpawnScript>().DisableCharacter();
                     gameloop.IsPlayer_4CanWin = false;
                     updateCurreentPlayerServerRpc(4);
