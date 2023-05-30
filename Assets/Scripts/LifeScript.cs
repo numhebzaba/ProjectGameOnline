@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using TMPro;
+using Cinemachine;
 
 public class LifeScript : NetworkBehaviour
 {
@@ -24,6 +25,7 @@ public class LifeScript : NetworkBehaviour
     // Start is called before the first frame update
 
     GameLoop gameloop;
+    public GameObject cinemachineVirtualCamera;
 
     void Start()
     {
@@ -33,6 +35,7 @@ public class LifeScript : NetworkBehaviour
         p4Text = GameObject.Find("P4LifeText").GetComponent<TMP_Text>();
         PlayerName = GetComponent<PlayerName>();
         gameloop = GameObject.Find("GameLoop").GetComponent<GameLoop>();
+        cinemachineVirtualCamera = GameObject.Find("PlayerFollowCamera");
 
     }
     
@@ -68,6 +71,7 @@ public class LifeScript : NetworkBehaviour
                 }
                 else if (lifeP1.Value == 0)
                 {
+                    cinemachineVirtualCamera.SetActive(false);
                     GetComponent<PlayerSpawnScript>().DisableCharacter();
                     gameloop.IsPlayer_1CanWin = false;
                     updateCurreentPlayerServerRpc(1);
@@ -147,6 +151,13 @@ public class LifeScript : NetworkBehaviour
             gameloop.IsPlayer_3CanWin = false;
         else if (indexPlayer == 4)
             gameloop.IsPlayer_4CanWin = false;
+
+
+    }
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        //cinemachineVirtualCamera = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
 
 
     }

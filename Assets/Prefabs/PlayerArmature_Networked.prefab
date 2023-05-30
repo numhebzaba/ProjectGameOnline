@@ -95,6 +95,10 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6773817544680933169, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      propertyPath: cinemachineVirtualCamera
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6917144231859373522, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: character
       value: 

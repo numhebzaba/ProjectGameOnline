@@ -62,7 +62,8 @@ public class ClientPlayerMove : NetworkBehaviour
         m_CharacterController.enabled = true;
         m_CapsuleCollider.enabled = true;
 
-        var cinemachineVirtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
+        var cinemachineVirtualCamera = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+        //cinemachineVirtualCamera = GameObject.Find("PlayerFollowCamera").GetComponent<GameObject>();
         cinemachineVirtualCamera.Follow = m_CameraFollow;
 
     }
